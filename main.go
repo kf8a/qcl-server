@@ -39,15 +39,17 @@ func (q *qcl) read() {
 	defer socket.Close()
 
 	socket.SetSubscribe("")
-	socket.Connect("tcp://192.108.190.96:5550")
 	for {
-		data, err := socket.Recv(0)
-		if err != nil {
-			log.Println("line 44")
-			log.Println(err)
-			return
+		socket.Connect("tcp://192.108.190.96:5550")
+		for {
+			data, err := socket.Recv(0)
+			if err != nil {
+				log.Println("line 44")
+				log.Println(err)
+				return
+			}
+			q.send <- []byte(data)
 		}
-		q.send <- []byte(data)
 	}
 }
 
@@ -67,9 +69,7 @@ func main() {
 
 	instrument := &qcl{send: make(chan []byte, 512)}
 	go instrument.read()
-	// for {
-	// 	fmt.Println(string(<-instrument.send))
-	// }
+
 	r := mux.NewRouter()
 	r.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		QclHandler(instrument, w, r)
