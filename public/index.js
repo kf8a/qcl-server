@@ -3,17 +3,23 @@ $(function() {
   var conn;
   var log = $("#log");
 
-  var n = 40,
+  var n = 20,
+    // duration = 750,
+    // now = new Date(Date.now() - duration),
     random = d3.random.normal(0, .2),
-    ch4 = d3.range(n).map(random);
+    ch4 = d3.range(n).map(function() { return 0; });
 
   var margin = {top: 20, right: 20, bottom: 20, left: 40},
     width = 960 - margin.left - margin.right,
     height = 200 - margin.top - margin.bottom;
 
+  // var x = d3.time.scale()
+  //   .domain([now - (n - 2) * duration, now - duration])
+  //   .range([0, width]);
+
   var x = d3.scale.linear()
-  .domain([0, n - 1])
-  .range([0, width]);
+    .domain([0,n])
+    .range([0, width])
 
   var y = d3.scale.linear()
   .domain([2.2, 4.5])
@@ -40,9 +46,11 @@ $(function() {
   .attr("transform", "translate(0," + y(0) + ")")
   .call(d3.svg.axis().scale(x).orient("bottom"));
 
+  var yAxis = d3.svg.axis().scale(y).orient("left");
+
   svg.append("g")
   .attr("class", "y axis")
-  .call(d3.svg.axis().scale(y).orient("left"));
+  .call(yAxis);
 
   var path = svg.append("g")
     .attr("clip-path", "url(#clip)")
@@ -67,20 +75,24 @@ $(function() {
     }
     conn.onmessage = function(evt) {
       appendLog($("<div/>").text(evt.data));
-      data = JSON.parse(evt.data)
-      console.log(data.CH4_dry_ppm)
+      data = JSON.parse(evt.data);
 
       // push data onto the array
-      ch4.push(data.CH4_dry_ppm)
+      ch4.push(data.CH4_dry_ppm);
 
-      // // redraw the line, and slide it to the left
+      // update the domain
+      // x.domain([now - (n - 2) * duration, now - duration]);
+      y.domain([d3.min(ch4), d3.max(ch4)]);
+      svg.select(".y.axis").transition().call(yAxis);
+
+      // redraw the line, and slide it to the left
       path
         .attr("d", line)
         .attr("transform", null)
         .transition()
         .duration(500)
         .ease("linear")
-        .attr("transform", "translate(" + x(-1) + ",0)")
+        .attr("transform", "translate(" + x(-1) + ",0)");
 
       // pop the old data point off the front
       ch4.shift();
