@@ -45,7 +45,7 @@ func (q *qcl) read() {
 			if err != nil {
 				log.Println("Read error", err)
 				socket.Close()
-				return
+				break
 			}
 			q.send <- []byte(data)
 		}
