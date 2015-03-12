@@ -31,21 +31,20 @@ type qcl struct {
 }
 
 func (q *qcl) read() {
-	socket, err := zmq.NewSocket(zmq.SUB)
-	if err != nil {
-		log.Println("ZMQ socket error")
-		log.Fatal(err)
-	}
-	defer socket.Close()
-
-	socket.SetSubscribe("")
 	for {
+		socket, err := zmq.NewSocket(zmq.SUB)
+		if err != nil {
+			log.Println("ZMQ socket error", err)
+		}
+		defer socket.Close()
+
+		socket.SetSubscribe("")
 		socket.Connect("tcp://192.108.190.96:5550")
 		for {
 			data, err := socket.Recv(0)
 			if err != nil {
-				log.Println("line 44")
-				log.Println(err)
+				log.Println("Read error", err)
+				socket.Close()
 				return
 			}
 			q.send <- []byte(data)
@@ -76,5 +75,5 @@ func main() {
 	})
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/")))
 	http.Handle("/", r)
-	http.ListenAndServe(":9000", nil)
+	http.ListenAndServe(":8080", nil)
 }

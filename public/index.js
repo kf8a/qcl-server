@@ -3,9 +3,9 @@ $(function() {
   var conn;
   var log = $("#log");
 
-  var n = 20,
-    // duration = 750,
-    // now = new Date(Date.now() - duration),
+  var n = 0,
+    duration = 750,
+    now = new Date(Date.now() - duration),
     random = d3.random.normal(0, .2),
     ch4 = d3.range(n).map(function() { return 0; });
 
@@ -14,8 +14,8 @@ $(function() {
     height = 200 - margin.top - margin.bottom;
 
   // var x = d3.time.scale()
-  //   .domain([now - (n - 2) * duration, now - duration])
-  //   .range([0, width]);
+  //     .domain([now - (n - 2) * duration, now - duration])
+  //     .range([0, width]);
 
   var x = d3.scale.linear()
     .domain([0,n])
@@ -41,10 +41,12 @@ $(function() {
   .attr("width", width)
   .attr("height", height);
 
+  var xAxis = d3.svg.axis().scale(x).orient("bottom");
+
   svg.append("g")
   .attr("class", "x axis")
   .attr("transform", "translate(0," + y(0) + ")")
-  .call(d3.svg.axis().scale(x).orient("bottom"));
+  .call(xAxis);
 
   var yAxis = d3.svg.axis().scale(y).orient("left");
 
@@ -69,7 +71,7 @@ $(function() {
   }
 
   if (window["WebSocket"]) {
-    conn = new WebSocket("ws://127.0.0.1:9000/ws");
+    conn = new WebSocket("ws://127.0.0.1:8080/ws");
     conn.onclose = function(evt) {
       appendLog($("<div><b>Connection closed.</b></div>"))
     }
@@ -81,11 +83,14 @@ $(function() {
       ch4.push(data.CH4_dry_ppm);
 
       // update the domain
-      // x.domain([now - (n - 2) * duration, now - duration]);
+      x.domain([0,ch4.length])
+      svg.select(".x.axis").transition().call(xAxis);
+
       y.domain([d3.min(ch4), d3.max(ch4)]);
       svg.select(".y.axis").transition().call(yAxis);
 
       // redraw the line, and slide it to the left
+      if (ch4.length > 500) {
       path
         .attr("d", line)
         .attr("transform", null)
@@ -95,7 +100,11 @@ $(function() {
         .attr("transform", "translate(" + x(-1) + ",0)");
 
       // pop the old data point off the front
-      ch4.shift();
+        ch4.shift();
+      } else {
+      path
+        .attr("d", line);
+      }
 
     }
   } else {
