@@ -66,7 +66,7 @@ func QclHandler(q *qcl, w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
-	instrument := &qcl{send: make(chan []byte, 512)}
+	instrument := &qcl{send: make(chan []byte, 1024)}
 	go instrument.read()
 
 	r := mux.NewRouter()
