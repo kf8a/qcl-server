@@ -1,10 +1,8 @@
 package main
 
 import (
-	// "fmt"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
-	zmq "github.com/pebbe/zmq4"
 	"log"
 	"net/http"
 )
@@ -12,6 +10,7 @@ import (
 type connection struct {
 	ws   *websocket.Conn
 	send chan []byte
+	q    *qcl
 }
 
 func (c *connection) reader() {
@@ -25,33 +24,6 @@ func (c *connection) reader() {
 	c.ws.Close()
 }
 
-type qcl struct {
-	socket zmq.Socket
-	send   chan []byte
-}
-
-func (q *qcl) read() {
-	for {
-		socket, err := zmq.NewSocket(zmq.SUB)
-		if err != nil {
-			log.Println("ZMQ socket error", err)
-		}
-		defer socket.Close()
-
-		socket.SetSubscribe("")
-		socket.Connect("tcp://192.108.190.96:5550")
-		for {
-			data, err := socket.Recv(0)
-			if err != nil {
-				log.Println("Read error", err)
-				socket.Close()
-				break
-			}
-			q.send <- []byte(data)
-		}
-	}
-}
-
 var upgrader = websocket.Upgrader{ReadBufferSize: 1024, WriteBufferSize: 1024}
 
 func QclHandler(q *qcl, w http.ResponseWriter, r *http.Request) {
@@ -60,13 +32,15 @@ func QclHandler(q *qcl, w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	c := &connection{send: q.send, ws: ws}
+	c := &connection{send: make(chan []byte), ws: ws, q: q}
+	c.q.register <- c
+	defer func() { c.q.unregister <- c }()
 	c.reader()
 }
 
 func main() {
-
-	instrument := &qcl{send: make(chan []byte, 1024)}
+	var host = "127.0.0.1"
+	instrument := newQcl("tcp://" + host + ":5550")
 	go instrument.read()
 
 	r := mux.NewRouter()
