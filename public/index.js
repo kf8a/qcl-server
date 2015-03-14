@@ -64,8 +64,8 @@ $(function() {
       datum.time = new Date(datum.time);
 
       data.push(datum);
-      // update the domain
 
+      // update the domain
       x.domain([d3.min(data, function(d) {return d.obs_time}), 
                d3.max(data, function(d) {return d.obs_time})]);
       svg.select(".x.axis")
