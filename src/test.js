@@ -12,8 +12,13 @@ var sampleData = [
 
 var App = React.createClass({
   getInitialState: function() {
+    mydata = sampleData.map(function(x) {
+      x.obs_time = new Date(x.obs_time);
+      x.time = new Date(x.time);
+      return x;
+    })
     return {
-      data: sampleData,
+      data: mydata,
     };
   },
 
@@ -22,7 +27,6 @@ var App = React.createClass({
       <div className="App">
       <Chart
       data={this.state.data} />
-
       </div>
     );
   }
@@ -32,5 +36,4 @@ React.render(
   < App />, 
   document.getElementById('example')
 )
-// React.render(App(), document.body);
 

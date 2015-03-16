@@ -5,10 +5,9 @@ d3Chart.create = function(el, props, state) {
   var height = 240 //props.height
   var width =  960 //props.width
   var data  =  state.data
-  console.log(data)
   var margin = {top: 20, right: 20, bottom: 20, left: 40}
 
-  var svg = d3.select(el).append('svg')
+  state.svg = d3.select(el).append('svg')
   .attr('class', 'd3')
   .attr('width', width)
   .attr('height', height);
@@ -22,9 +21,9 @@ d3Chart.create = function(el, props, state) {
     .domain([2.2, 4.5])
     .range([height, 0]);
 
-  var line = d3.svg.line()
-    state.x(function(d, i) { return x(d.obs_time); })
-    state.y(function(d, i) { return y(d.CH4_ppm); });
+  state.line = d3.svg.line()
+    .x(function(d, i) { return state.x(d.obs_time); })
+    .y(function(d, i) { return state.y(d.CH4_ppm); });
 
   state.svg = d3.select(el).append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -50,10 +49,10 @@ d3Chart.create = function(el, props, state) {
   .attr("class", "y axis")
   .call(state.yAxis);
 
-  state.path = svg.append("g")
+  state.path = state.svg.append("g")
     .attr("clip-path", "url(#clip)")
     .append("path")
-    .datum(data)
+    .datum(state.data)
     .attr("class", "line")
     .attr("d", state.line);
 
@@ -88,8 +87,6 @@ d3Chart.update = function(el, props, state) {
         state.path
         .attr("d", state.line);
       }
-  // var scales = this._scales(el, state.domain);
-  // this._drawPoints(el, scales, state.data);
 };
 
 d3Chart.destroy = function(el) {
