@@ -22,8 +22,8 @@ d3Chart.create = function(el, props, state) {
     .attr("height", height);
 
   var x = d3.time.scale()
-      .domain([d3.min(data, function(d) {return d.obs_time}), 
-               d3.max(data, function(d) {return d.obs_time})])
+      .domain([d3.min(data, function(d) {return d.time}), 
+               d3.max(data, function(d) {return d.time})])
       .range([0, state.width]);
   this.elements.x = x;
 
@@ -33,8 +33,8 @@ d3Chart.create = function(el, props, state) {
   this.elements.y = y
 
   var line = d3.svg.line()
-    .x(function(d, i) { return x(d.obs_time); })
-    .y(function(d, i) { return y(d.CH4_ppm); });
+    .x(function(d, i) { return x(d.time); })
+    .y(function(d, i) { return y(d.value); });
   this.elements.line = line;
 
   xAxis = d3.svg.axis().scale(x).orient("top");
@@ -67,14 +67,14 @@ d3Chart.update = function(el, state) {
 
   // Re-compute the elements, and render the data points
   var x = this.elements.x;
-    x.domain([d3.min(data, function(d) {return d.obs_time}), 
-             d3.max(data, function(d) {return d.obs_time})]);
+    x.domain([d3.min(data, function(d) {return d.time}), 
+             d3.max(data, function(d) {return d.time})]);
     svg.select(".x.axis")
       .transition().duration(100).call(xAxis);
 
     var y = this.elements.y;
-    y.domain([d3.min(data, function(d) { return d.CH4_ppm}), 
-             d3.max(data, function(d) {return d.CH4_ppm})]);
+    y.domain([d3.min(data, function(d) { return d.value}), 
+             d3.max(data, function(d) {return d.value})]);
     svg.select(".y.axis")
       .transition().duration(100).ease('cubic').call(yAxis);
 
@@ -83,7 +83,7 @@ d3Chart.update = function(el, state) {
     // var path = this.elements.path;
     var line = this.elements.line;
 
-    var tr = d3.min(data, function(d) {return d.obs_time});
+    var tr = d3.min(data, function(d) {return d.time});
     path
       .attr("d", line)
       .attr("transform", null)
