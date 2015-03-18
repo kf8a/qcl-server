@@ -11,15 +11,16 @@ var sampleData = [
 ];
 
 var App = React.createClass({
+
+  loadDataFromServer:  function() {
+  },
+
   getInitialState: function() {
-    mydata = sampleData.map(function(x) {
-      x.obs_time = new Date(x.obs_time);
-      x.time = new Date(x.time);
-      return x;
-    })
-    return {
-      data: mydata,
-    };
+    return { data: []};
+  },
+
+  componentDidMount: function() {
+    this.requestData();
   },
 
   render: function() {
@@ -29,11 +30,30 @@ var App = React.createClass({
       data={this.state.data} />
       </div>
     );
+  },
+
+  requestData: function() {
+    var socket = this.props.socketService;
+
+    socket.onDataReceived(function (datum) {
+      datum.obs_time = new Date(datum.obs_time);
+      datum.time = new Date(datum.time);
+      var mydata = this.state.data;
+
+      mydata.push(datum)
+
+      this.setState({data: mydata});
+    }.bind(this));
   }
+
+});
+
+var socketService = new SocketService({
+    path: '/ws'
 });
 
 React.render(
-  < App />, 
+  < App socketService={socketService} />, 
   document.getElementById('example')
 )
 
