@@ -13,6 +13,7 @@ d3Chart.create = function(el, props, state) {
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  this.elements.svg = svg;
 
   svg.append("defs").append("clipPath")
     .attr("id", "clip")
@@ -34,8 +35,9 @@ d3Chart.create = function(el, props, state) {
   var line = d3.svg.line()
     .x(function(d, i) { return x(d.obs_time); })
     .y(function(d, i) { return y(d.CH4_ppm); });
-  xAxis = d3.svg.axis().scale(x).orient("top");
   this.elements.line = line;
+
+  xAxis = d3.svg.axis().scale(x).orient("top");
 
   svg.append("g")
     .attr("class", "x axis")
@@ -77,7 +79,8 @@ d3Chart.update = function(el, state) {
       .transition().duration(100).ease('cubic').call(yAxis);
 
     // redraw the line, and slide it to the left
-    var path = this.elements.path;
+    var path = svg.select("path.line"); //this.elements.path;
+    // var path = this.elements.path;
     var line = this.elements.line;
 
     var tr = d3.min(data, function(d) {return d.obs_time});

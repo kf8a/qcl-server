@@ -5,9 +5,6 @@
 
 var App = React.createClass({
 
-  loadDataFromServer:  function() {
-  },
-
   getInitialState: function() {
     return { data: []};
   },
@@ -19,6 +16,8 @@ var App = React.createClass({
   render: function() {
     return (
       <div className="App">
+      <Chart
+      data={this.state.data} />
       <Chart
       data={this.state.data} />
       </div>
