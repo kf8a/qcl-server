@@ -1,94 +1,103 @@
 var d3Chart = {};
 
-d3Chart.create = function(el, props, state) {
+d3Chart.elements = {};
 
-  var height = 240 //props.height
-  var width =  960 //props.width
+d3Chart.create = function(el, props, state) {
+  var height = props.height
+  var width =  props.width
   var data  =  state.data
   var margin = {top: 20, right: 20, bottom: 20, left: 40}
 
-  state.svg = d3.select(el).append('svg')
-  .attr('class', 'd3')
-  .attr('width', width)
-  .attr('height', height);
-
-  state.x = d3.time.scale()
-      .domain([d3.min(data, function(d) {return d.obs_time}), 
-               d3.max(data, function(d) {return d.obs_time})])
-      .range([0, width]);
-
-  state.y = d3.scale.linear()
-    .domain([2.2, 4.5])
-    .range([height, 0]);
-
-  state.line = d3.svg.line()
-    .x(function(d, i) { return state.x(d.obs_time); })
-    .y(function(d, i) { return state.y(d.CH4_ppm); });
-
-  state.svg = d3.select(el).append("svg")
+  var svg = d3.select(el).append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  state.svg.append("defs").append("clipPath")
+  svg.append("defs").append("clipPath")
     .attr("id", "clip")
     .append("rect")
     .attr("width", width)
     .attr("height", height);
 
-  state.xAxis = d3.svg.axis().scale(state.x).orient("top");
+  var x = d3.time.scale()
+      .domain([d3.min(data, function(d) {return d.obs_time}), 
+               d3.max(data, function(d) {return d.obs_time})])
+      .range([0, state.width]);
+  this.elements.x = x;
 
-  state.svg.append("g")
-  .attr("class", "x axis")
-  .call(state.xAxis);
+  var y = d3.scale.linear()
+    .domain([2.2, 4.5])
+    .range([state.height, 0]);
+  this.elements.y = y
 
-  state.yAxis = d3.svg.axis().scale(state.y).orient("left");
+  var line = d3.svg.line()
+    .x(function(d, i) { return x(d.obs_time); })
+    .y(function(d, i) { return y(d.CH4_ppm); });
+  xAxis = d3.svg.axis().scale(x).orient("top");
+  this.elements.line = line;
 
-  state.svg.append("g")
+  svg.append("g")
+    .attr("class", "x axis")
+    .call(xAxis);
+
+  yAxis = d3.svg.axis().scale(y).orient("left");
+
+  svg.append("g")
   .attr("class", "y axis")
-  .call(state.yAxis);
+  .call(yAxis);
 
-  state.path = state.svg.append("g")
+  this.elements.path = svg.append("g")
     .attr("clip-path", "url(#clip)")
     .append("path")
     .datum(state.data)
     .attr("class", "line")
-    .attr("d", state.line);
+    .attr("d", line);
 
-  this.update(el, props, state);
+  return(this);
 };
 
-d3Chart.update = function(el, props, state) {
+d3Chart.update = function(el, state) {
+
   var data = state.data;
-  // Re-compute the scales, and render the data points
-      state.x.domain([d3.min(data, function(d) {return d.obs_time}), 
-               d3.max(data, function(d) {return d.obs_time})]);
-      state.svg.select(".x.axis")
-        .transition().duration(100).call(state.xAxis);
 
-      state.y.domain([d3.min(data, function(d) { return d.CH4_ppm}), 
-               d3.max(data, function(d) {return d.CH4_ppm})]);
-      state.svg.select(".y.axis")
-        .transition().duration(100).ease('cubic').call(state.yAxis);
+  var svg = d3.select(el).select('svg');
 
-      // redraw the line, and slide it to the left
-      if (data.length > 50) {
-        var tr = d3.min(data, function(d) {return d.obs_time});
-        state.path
-          .attr("d", state.line)
-          .attr("transform", null)
-          .transition()
-          .duration(100)
-          .ease("linear")
-          .attr("transform", "translate(" + state.x(tr-1) + ",0)");
+  // Re-compute the elements, and render the data points
+  var x = this.elements.x;
+    x.domain([d3.min(data, function(d) {return d.obs_time}), 
+             d3.max(data, function(d) {return d.obs_time})]);
+    svg.select(".x.axis")
+      .transition().duration(100).call(xAxis);
 
-      } else {
-        state.path
-        .attr("d", state.line);
-      }
+    var y = this.elements.y;
+    y.domain([d3.min(data, function(d) { return d.CH4_ppm}), 
+             d3.max(data, function(d) {return d.CH4_ppm})]);
+    svg.select(".y.axis")
+      .transition().duration(100).ease('cubic').call(yAxis);
+
+    // redraw the line, and slide it to the left
+    var path = this.elements.path;
+    var line = this.elements.line;
+
+    if (data.length > 50) {
+      var tr = d3.min(data, function(d) {return d.obs_time});
+      path
+        .attr("d", line)
+        .attr("transform", null)
+        .transition()
+        .duration(100)
+        .ease("linear")
+        .attr("transform", "translate(" + x(tr-1) + ",0)");
+
+    } else {
+      path
+      .attr("d", line);
+    }
 };
 
+d3Chart._x = function() {
+};
 d3Chart.destroy = function(el) {
   // Any clean-up would go here
 };
