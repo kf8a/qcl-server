@@ -80,20 +80,15 @@ d3Chart.update = function(el, state) {
     var path = this.elements.path;
     var line = this.elements.line;
 
-    if (data.length > 50) {
-      var tr = d3.min(data, function(d) {return d.obs_time});
-      path
-        .attr("d", line)
-        .attr("transform", null)
-        .transition()
-        .duration(100)
-        .ease("linear")
-        .attr("transform", "translate(" + x(tr-1) + ",0)");
+    var tr = d3.min(data, function(d) {return d.obs_time});
+    path
+      .attr("d", line)
+      .attr("transform", null)
+      .transition()
+      .duration(100)
+      .ease("linear")
+      .attr("transform", "translate(" + x(tr-1) + ",0)");
 
-    } else {
-      path
-      .attr("d", line);
-    }
 };
 
 d3Chart._x = function() {
