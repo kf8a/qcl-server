@@ -49,8 +49,8 @@ d3Chart.create = function(el, props, state) {
   .attr("class", "y axis")
   .call(yAxis);
 
-  svg.append("g").
-    attr("class", "circles")
+  svg.append("g")
+    .attr("class", "circles")
     .selectAll("circle")
     .data(data)
     .enter()
@@ -58,6 +58,16 @@ d3Chart.create = function(el, props, state) {
     .attr("r", 3.5)
     .attr("cx", x(function(d) {return(d.time)}))
     .attr("cy", y(function(d) {return(d.value)}))
+
+    this.elements.path = svg.append("g")
+      .attr("clip-path", "url(#clip)")
+      .append("path")
+      .datum(state.data)
+      .attr("class", "line")
+      .attr("d", line);
+
+  svg.append("g")
+    .attr("class", "trendlines")
 
   return(this);
 };
@@ -71,16 +81,19 @@ d3Chart.update = function(el, state) {
 
   // Re-compute the elements, and render the data points
   var x = this.elements.x;
-  x.domain([d3.min(data, function(d) {return d.time}), 
-           d3.max(data, function(d) {return d.time})]);
+  var min_x = d3.min(data, function(d) {return d.time});
+  var max_x = d3.max(data, function(d) {return d.time});
+
+  x.domain([min_x, max_x]);
   svg.select(".x.axis")
-    .transition().duration(100).call(xAxis);
+    .transition().duration(200).call(xAxis);
 
   var y = this.elements.y;
-  y.domain([d3.min(data, function(d) { return d.value}), 
-           d3.max(data, function(d) {return d.value})]);
+  var min_y = d3.min(data, function(d) {return d.value});
+  var max_y = d3.max(data, function(d) {return d.value});
+  y.domain([min_y, max_y]);
   svg.select(".y.axis")
-    .transition().duration(100).call(yAxis);
+    .transition().duration(200).call(yAxis);
 
   // redraw the line, and slide it to the left
   var path = svg.select("path.line"); 
@@ -91,7 +104,7 @@ d3Chart.update = function(el, state) {
   svg.select(".circles").selectAll("circle")
     .data(data)
     .transition()
-    .duration(100)
+    .duration(0)
     .attr("r",2)
     .attr("cx", function(d) {return x(d.time)})
     .attr("cy", function(d) { return y(d.value)})
@@ -101,15 +114,51 @@ d3Chart.update = function(el, state) {
     .enter()
     .append("circle")
     .attr("r", 2)
-    .attr("cx", function(d) {
-      return x(d.time);
-    })
+    .attr("cx", function(d) { return x(d.time)})
     .attr("cy", function(d) { return y(d.value)})
 
   svg.select(".circles").selectAll("circle")
     .data(data)
     .exit()
     .remove()
+
+  if (data.length == 0 ) {
+    path.datum(data)
+  } else {
+    path
+    .attr("d", line)
+    .attr("transform", null)
+    .transition()
+    .duration(0)
+    .ease("linear")
+    .attr("transform", "translate(" + x(tr-1) + ",0)");
+  }
+
+  console.log(x(min_x), x(max_x));
+  var trendData = [[min_x, 0.3, max_x, max_y]];
+
+  // console.log(x(min_x), y(0.3), x(max_x), y(0.5))
+  var trendline = svg.select(".trendlines")
+    .selectAll(".trendline")
+    .data(trendData);
+
+  trendline.enter()
+    .append("line")
+    .attr("class", "trendline")
+    .attr("x1", function(d) { return x(d[0]); })
+    .attr("y1", function(d) { return y(d[1]); })
+    .attr("x2", function(d) { return x(d[2]); })
+    .attr("y2", function(d) { return y(d[3]); })
+    .attr("stroke", "black")
+    .attr("stroke-width", 2);
+
+  trendline.transition()
+    .attr("x1", function(d) { return x(d[0]); })
+    .attr("y1", function(d) { return y(d[1]); })
+    .attr("x2", function(d) { return x(d[2]); })
+    .attr("y2", function(d) { return y(d[3]); })
+    .attr("stroke", "black")
+    .attr("stroke-width", 2);
 };
 
 d3Chart._x = function() {
