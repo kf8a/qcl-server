@@ -49,12 +49,23 @@ d3Chart.create = function(el, props, state) {
   .attr("class", "y axis")
   .call(yAxis);
 
-  this.elements.path = svg.append("g")
-    .attr("clip-path", "url(#clip)")
-    .append("path")
-    .datum(state.data)
-    .attr("class", "line")
-    .attr("d", line);
+  svg.append("g").
+    attr("class", "circles")
+    .selectAll("circle")
+    .data(data)
+    .enter()
+    .append("circle")
+    .attr("r", 3.5)
+    .attr("cx", x(function(d) {return(d.time)}))
+    .attr("cy", y(function(d) {return(d.value)}))
+
+
+  // this.elements.path = svg.append("g")
+  //   .attr("clip-path", "url(#clip)")
+  //   .append("path")
+  //   .datum(state.data)
+  //   .attr("class", "line")
+  //   .attr("d", line);
 
   return(this);
 };
@@ -62,36 +73,63 @@ d3Chart.create = function(el, props, state) {
 d3Chart.update = function(el, state) {
 
   var data = state.data;
+  // if (data.length == 0) { return }
 
   var svg = d3.select(el).select('svg');
 
   // Re-compute the elements, and render the data points
   var x = this.elements.x;
-    x.domain([d3.min(data, function(d) {return d.time}), 
-             d3.max(data, function(d) {return d.time})]);
-    svg.select(".x.axis")
-      .transition().duration(100).call(xAxis);
+  x.domain([d3.min(data, function(d) {return d.time}), 
+           d3.max(data, function(d) {return d.time})]);
+  svg.select(".x.axis")
+    .transition().duration(100).call(xAxis);
 
-    var y = this.elements.y;
-    y.domain([d3.min(data, function(d) { return d.value}), 
-             d3.max(data, function(d) {return d.value})]);
-    svg.select(".y.axis")
-      .transition().duration(100).ease('cubic').call(yAxis);
+  var y = this.elements.y;
+  y.domain([d3.min(data, function(d) { return d.value}), 
+           d3.max(data, function(d) {return d.value})]);
+  svg.select(".y.axis")
+    .transition().duration(100).call(yAxis);
 
-    // redraw the line, and slide it to the left
-    var path = svg.select("path.line"); //this.elements.path;
-    // var path = this.elements.path;
-    var line = this.elements.line;
+  // redraw the line, and slide it to the left
+  var path = svg.select("path.line"); 
+  var line = this.elements.line;
 
-    var tr = d3.min(data, function(d) {return d.time});
-    path
-      .attr("d", line)
-      .attr("transform", null)
-      .transition()
-      .duration(100)
-      .ease("linear")
-      .attr("transform", "translate(" + x(tr-1) + ",0)");
+  var tr = d3.min(data, function(d) {return d.time});
 
+  svg.select(".circles").selectAll("circle")
+    .data(data)
+    .transition()
+    .duration(100)
+    .attr("r",2)
+    .attr("cx", function(d) {return x(d.time)})
+    .attr("cy", function(d) { return y(d.value)})
+
+  svg.select(".circles").selectAll("cirlce")
+    .data(data)
+    .enter()
+    .append("circle")
+    .attr("r", 2)
+    .attr("cx", function(d) {
+      return x(d.time);
+    })
+    .attr("cy", function(d) { return y(d.value)})
+
+  svg.select(".circles").selectAll("circle")
+    .data(data)
+    .exit()
+    .remove()
+
+  // if (data.length == 0 ) {
+  //   path.datum(data)
+  // } else {
+  // path
+  //   .attr("d", line)
+  //   .attr("transform", null)
+  //   .transition()
+  //   .duration(100)
+  //   .ease("linear")
+  //   .attr("transform", "translate(" + x(tr-1) + ",0)");
+  // }
 };
 
 d3Chart._x = function() {
