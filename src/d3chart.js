@@ -134,10 +134,13 @@ d3Chart.update = function(el, state) {
     .attr("transform", "translate(" + x(tr-1) + ",0)");
   }
 
-  console.log(x(min_x), x(max_x));
-  var trendData = [[min_x, 0.3, max_x, max_y]];
+  var slope = state.slope
+  var intercept = state.intercept
+  var base = state.now
+  var y1 = slope * (min_x - base) + intercept;
+  var y2 = slope * (max_x - base) + intercept;
+  var trendData = [[min_x, y1, max_x, y2]];
 
-  // console.log(x(min_x), y(0.3), x(max_x), y(0.5))
   var trendline = svg.select(".trendlines")
     .selectAll(".trendline")
     .data(trendData);
@@ -161,8 +164,6 @@ d3Chart.update = function(el, state) {
     .attr("stroke-width", 2);
 };
 
-d3Chart._x = function() {
-};
 d3Chart.destroy = function(el) {
   // Any clean-up would go here
 };

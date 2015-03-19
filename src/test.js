@@ -7,7 +7,6 @@ var App = React.createClass({
 
   getInitialState: function() {
     return { 
-      data: [],
       ch4: [],
       n2o: [],
       co2: [],
@@ -15,7 +14,11 @@ var App = React.createClass({
       state: 'freerun',
       n2o_flux: 0,
       co2_flux: 0,
-      ch4_flux: 0
+      ch4_flux: 0,
+      n2o_intercept: 0,
+      co2_intercept: 0,
+      ch4_intercept: 0,
+      now: new Date()
     };
   },
 
@@ -26,12 +29,21 @@ var App = React.createClass({
   render: function() {
     return (
       <div className="App">
-      <Chart
-      data={this.state.co2} />
-      <Chart
-      data={this.state.n2o} />
-      <Chart
-      data={this.state.ch4} />
+      <Chart 
+        now={ this.state.now}
+        slope={this.state.co2_flux}
+        intercept={this.state.co2_intercept}
+        data={this.state.co2} />
+      <Chart 
+        now={this.state.now} 
+        slope={this.state.n2o_flux}
+        intercept={this.state.n2o_intercept}
+        data={this.state.n2o} />
+      <Chart 
+        now={this.state.now }
+        slope={this.state.ch4_flux}
+        intercept={this.state.ch4_intercept}
+        data={this.state.ch4} />
       <form onSubmit={this.handleSubmit}>
         <button>{ this.state.text}</button>
       </form>
@@ -44,7 +56,7 @@ var App = React.createClass({
   },
 
   resetData: function() {
-    this.setState({data: [], co2:[], ch4:[], n2o:[]});
+    this.setState({co2:[], ch4:[], n2o:[]});
   },
 
   handleSubmit: function(e) {
@@ -61,33 +73,34 @@ var App = React.createClass({
   },
 
   prepareData: function(datum) {
-      this.state.data.push(datum);
+      // this.state.data.push(datum);
       // var myco2 = this.state.co2.concat({ time: datum.obs_time, value: datum.CO2_ppm})
       this.state.co2.push({time: datum.obs_time, value: datum.CO2_ppm})
       this.state.n2o.push({time: datum.obs_time, value: datum.N2O_dry_ppm})
       this.state.ch4.push({time: datum.obs_time, value: datum.CH4_dry_ppm})
 
-      if (this.state.data.length > 200) {
-        this.state.data.shift();
+      if (this.state.co2.length > 200) {
         this.state.co2.shift();
         this.state.n2o.shift();
         this.state.ch4.shift()
       };
 
-      this.setState({data: this.state.data, 
-                    co2: this.state.co2,
+      this.setState({ co2: this.state.co2,
                     ch4: this.state.ch4, 
                     n2o: this.state.n2o});
   },
 
   computeFluxes: function() {
-    if (this.state.data.length < 2) {return; };
+    if (this.state.co2.length < 2) {return; };
     var n2o_flux = this.computeFlux(this.state.n2o);
     var co2_flux = this.computeFlux(this.state.co2);
     var ch4_flux = this.computeFlux(this.state.ch4);
     this.setState({n2o_flux: n2o_flux['slope'], 
+                  n2o_intercept: n2o_flux['intercept'],
                   co2_flux: co2_flux['slope'], 
-                  ch4_flux: ch4_flux['slope']});
+                  co2_intercept: co2_flux['intercept'],
+                  ch4_flux: ch4_flux['slope'],
+                  ch4_intercept: ch4_flux['intercept']});
   },
 
   computeFlux: function(data) {
@@ -97,7 +110,8 @@ var App = React.createClass({
     var y = data.map(function(e) {
       return e.value;
     });
-    return(this.linearRegression(x,y));
+    var lr = this.linearRegression(x,y);
+    return(lr);
   },
 
   linearRegression: function(x,y) {
@@ -133,9 +147,9 @@ var App = React.createClass({
       datum.time = new Date(datum.time);
 
       this.prepareData(datum);
-      if (this.state.state == 'record') {
+      // if (this.state.state == 'record') {
         this.computeFluxes();
-      }
+      // }
     }.bind(this));
   }
 

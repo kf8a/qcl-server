@@ -21,6 +21,9 @@ var Chart = React.createClass({
   getChartState: function() {
     return {
       data: this.props.data,
+      now: this.props.now,
+      slope: this.props.slope,
+      intercept: this.props.intercept,
       width: 960,
       height: 150
     };
