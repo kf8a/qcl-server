@@ -59,14 +59,6 @@ d3Chart.create = function(el, props, state) {
     .attr("cx", x(function(d) {return(d.time)}))
     .attr("cy", y(function(d) {return(d.value)}))
 
-
-  // this.elements.path = svg.append("g")
-  //   .attr("clip-path", "url(#clip)")
-  //   .append("path")
-  //   .datum(state.data)
-  //   .attr("class", "line")
-  //   .attr("d", line);
-
   return(this);
 };
 
@@ -118,18 +110,6 @@ d3Chart.update = function(el, state) {
     .data(data)
     .exit()
     .remove()
-
-  // if (data.length == 0 ) {
-  //   path.datum(data)
-  // } else {
-  // path
-  //   .attr("d", line)
-  //   .attr("transform", null)
-  //   .transition()
-  //   .duration(100)
-  //   .ease("linear")
-  //   .attr("transform", "translate(" + x(tr-1) + ",0)");
-  // }
 };
 
 d3Chart._x = function() {
