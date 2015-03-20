@@ -134,18 +134,22 @@ d3Chart.update = function(el, state) {
     .attr("transform", "translate(" + x(tr-1) + ",0)");
   }
 
-  var slope = state.slope
-  var intercept = state.intercept
-  var base = state.now
-  var y1 = slope * (min_x - base) + intercept;
-  var y2 = slope * (max_x - base) + intercept;
-  var trendData = [[min_x, y1, max_x, y2]];
+  if (state.recording) {
+    var slope = state.slope
+    var intercept = state.intercept
+    var base = state.now
+    var y1 = slope * (min_x - base) + intercept;
+    var y2 = slope * (max_x - base) + intercept;
+    var trendData = [[min_x, y1, max_x, y2]];
+  } else {
+    var trendData = []
+  }
 
-  var trendline = svg.select(".trendlines")
+    var trendline = svg.select(".trendlines")
     .selectAll(".trendline")
     .data(trendData);
 
-  trendline.enter()
+    trendline.enter()
     .append("line")
     .attr("class", "trendline")
     .attr("x1", function(d) { return x(d[0]); })
@@ -155,13 +159,15 @@ d3Chart.update = function(el, state) {
     .attr("stroke", "black")
     .attr("stroke-width", 2);
 
-  trendline.transition()
+    trendline.transition()
     .attr("x1", function(d) { return x(d[0]); })
     .attr("y1", function(d) { return y(d[1]); })
     .attr("x2", function(d) { return x(d[2]); })
     .attr("y2", function(d) { return y(d[3]); })
     .attr("stroke", "black")
     .attr("stroke-width", 2);
+
+    trendline.exit().remove();
 };
 
 d3Chart.destroy = function(el) {

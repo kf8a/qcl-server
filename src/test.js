@@ -11,7 +11,7 @@ var App = React.createClass({
       n2o: [],
       co2: [],
       text: "Record",
-      state: 'freerun',
+      recording: false,
       n2o_flux: 0,
       co2_flux: 0,
       ch4_flux: 0,
@@ -33,16 +33,19 @@ var App = React.createClass({
         now={ this.state.now}
         slope={this.state.co2_flux}
         intercept={this.state.co2_intercept}
+        recording={this.state.recording}
         data={this.state.co2} />
       <Chart 
         now={this.state.now} 
         slope={this.state.n2o_flux}
         intercept={this.state.n2o_intercept}
+        recording={this.state.recording}
         data={this.state.n2o} />
       <Chart 
         now={this.state.now }
         slope={this.state.ch4_flux}
         intercept={this.state.ch4_intercept}
+        recording={this.state.recording}
         data={this.state.ch4} />
       <form onSubmit={this.handleSubmit}>
         <button>{ this.state.text}</button>
@@ -62,13 +65,17 @@ var App = React.createClass({
   handleSubmit: function(e) {
     e.preventDefault();
     this.resetData();
-    if (this.state.state == 'freerun') {
-      this.setState({text: 'Save', 
-                    state: 'record',
-                    now: new Date()})
-    } else {
-      this.setState({text: 'Record', state: 'freerun'})
+    if (this.state.recording) {
       // send data back to server
+      this.setState({text: 'Record', 
+                    n2o_flux: null,
+                    co2_flux: null,
+                    ch4_flux: null,
+                    recording: false})
+    } else {
+      this.setState({text: 'Save', 
+                    recording: true,
+                    now: new Date()})
     }
   },
 
@@ -147,9 +154,9 @@ var App = React.createClass({
       datum.time = new Date(datum.time);
 
       this.prepareData(datum);
-      // if (this.state.state == 'record') {
+      if (this.state.recording) {
         this.computeFluxes();
-      // }
+      }
     }.bind(this));
   }
 
