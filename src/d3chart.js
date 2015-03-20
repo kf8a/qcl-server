@@ -3,10 +3,14 @@ var d3Chart = {};
 d3Chart.elements = {};
 
 d3Chart.create = function(el, props, state) {
-  var height = props.height
-  var width =  props.width
+  var boundingBox = d3.select(el).node().getBoundingClientRect();
+  console.log(boundingBox)
+  var height = boundingBox.height
+  var width =  boundingBox.width
   var data  =  state.data
   var margin = {top: 20, right: 20, bottom: 20, left: 40}
+
+  console.log(el,height, width, margin)
 
   var svg = d3.select(el).append("svg")
     .attr("width", width + margin.left + margin.right)

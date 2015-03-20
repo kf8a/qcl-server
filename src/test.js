@@ -28,7 +28,7 @@ var App = React.createClass({
 
   render: function() {
     return (
-      <div className="App">
+      <div className="App container">
       <Chart 
         now={ this.state.now}
         slope={this.state.co2_flux}
@@ -47,10 +47,10 @@ var App = React.createClass({
         intercept={this.state.ch4_intercept}
         recording={this.state.recording}
         data={this.state.ch4} />
-      <form onSubmit={this.handleSubmit}>
-        <button>{ this.state.text}</button>
-      </form>
       <Result 
+        handleSubmit={this.handleSubmit}
+        handleCancel={this.handleCancel}
+        recording={this.state.recording}
         n2o={this.state.n2o_flux} 
         co2={this.state.co2_flux} 
         ch4={this.state.ch4_flux}/>
@@ -60,6 +60,15 @@ var App = React.createClass({
 
   resetData: function() {
     this.setState({co2:[], ch4:[], n2o:[]});
+  },
+
+  handleCancel: function(e) {
+    e.preventDefault();
+    this.resetData();
+    this.setState({n2o_flux: null,
+                  co2_flux: null,
+                  ch4_flux: null,
+                  recording: false});
   },
 
   handleSubmit: function(e) {
