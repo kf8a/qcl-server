@@ -8,8 +8,7 @@ var Chart = React.createClass({
   componentDidMount: function() {
     var el = this.getDOMNode();
 
-    this.d3Chart = d3Chart.create(el, {
-    }, this.getChartState());
+    this.d3Chart = d3Chart.create(el, this.getChartState());
   },
 
   componentDidUpdate: function() {
@@ -24,9 +23,7 @@ var Chart = React.createClass({
       now: this.props.now,
       slope: this.props.slope,
       intercept: this.props.intercept,
-      recording: this.props.recording,
-      width: 960,
-      height: 100
+      recording: this.props.recording
     };
   },
 

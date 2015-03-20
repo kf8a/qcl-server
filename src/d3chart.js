@@ -2,9 +2,8 @@ var d3Chart = {};
 
 d3Chart.elements = {};
 
-d3Chart.create = function(el, props, state) {
+d3Chart.create = function(el, state) {
   var boundingBox = d3.select(el).node().getBoundingClientRect();
-  console.log(boundingBox)
   var height = boundingBox.height
   var width =  boundingBox.width
   var data  =  state.data
@@ -28,12 +27,12 @@ d3Chart.create = function(el, props, state) {
   var x = d3.time.scale()
       .domain([d3.min(data, function(d) {return d.time}), 
                d3.max(data, function(d) {return d.time})])
-      .range([0, state.width]);
+      .range([0, width]);
   this.elements.x = x;
 
   var y = d3.scale.linear()
     .domain([2.2, 4.5])
-    .range([state.height, 0]);
+    .range([height, 0]);
   this.elements.y = y
 
   var line = d3.svg.line()
