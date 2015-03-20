@@ -29,24 +29,31 @@ var App = React.createClass({
   render: function() {
     return (
       <div className="App container">
+      <div className="row">
       <Chart 
         now={ this.state.now}
         slope={this.state.co2_flux}
         intercept={this.state.co2_intercept}
         recording={this.state.recording}
         data={this.state.co2} />
+        </div>
+        <div className="row">
       <Chart 
         now={this.state.now} 
         slope={this.state.n2o_flux}
         intercept={this.state.n2o_intercept}
         recording={this.state.recording}
         data={this.state.n2o} />
+        </div>
+        <div className="row">
       <Chart 
         now={this.state.now }
         slope={this.state.ch4_flux}
         intercept={this.state.ch4_intercept}
         recording={this.state.recording}
         data={this.state.ch4} />
+        </div>
+        <div className="row">
       <Result 
         handleSubmit={this.handleSubmit}
         handleCancel={this.handleCancel}
@@ -54,6 +61,7 @@ var App = React.createClass({
         n2o={this.state.n2o_flux} 
         co2={this.state.co2_flux} 
         ch4={this.state.ch4_flux}/>
+        </div>
       </div>
     );
   },
