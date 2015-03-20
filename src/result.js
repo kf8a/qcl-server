@@ -4,9 +4,9 @@ var Result =  React.createClass({
     return(
       <div className='results'>
         <ul>
-        <li>N2O: { this.props.n2o} </li>
-        <li>CO2: { this.props.co2} </li>
-        <li>CH4: { this.props.ch4} </li>
+        <li>N2O: { numeral(this.props.n2o * 100000).format('+0.0')} </li>
+        <li>CO2: { numeral(this.props.co2 * 100000).format('+0.0')} </li>
+        <li>CH4: { numeral(this.props.ch4 * 100000).format('+0.0')} </li>
         </ul>
       </div>
     )
