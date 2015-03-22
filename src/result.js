@@ -13,7 +13,7 @@ var Result =  React.createClass({
           </ul>
         </div>
           <div className="col-md-3">
-          <button type='button' className="btn btn-primary btn-block btn-lg" onClick={this.props.handleSubmit}>Save</button>
+          <button type='button' className="btn btn-primary btn-block btn-lg" onClick={this.props.handleSave}>Save</button>
           </div>
           <div className="col-md-3">
           <button className='btn btn-default btn-block btn-lg' type='button' onClick={this.props.handleCancel}>Cancel</button>
@@ -24,7 +24,7 @@ var Result =  React.createClass({
     } else {
       return(
       <div className='results'>
-        <button type='button' className="btn btn-primary btn-lg btn-block" onClick={this.props.handleSubmit}>Record</button>
+        <button type='button' className="btn btn-primary btn-lg btn-block" onClick={this.props.handleRecord}>Record</button>
         </div>
       )
   }

@@ -55,7 +55,8 @@ var App = React.createClass({
         </div>
         <div className="row">
       <Result 
-        handleSubmit={this.handleSubmit}
+        handleRecord={this.handleRecord}
+        handleSave={this.handleSave}
         handleCancel={this.handleCancel}
         recording={this.state.recording}
         n2o={this.state.n2o_flux} 
@@ -79,21 +80,20 @@ var App = React.createClass({
                   recording: false});
   },
 
-  handleSubmit: function(e) {
+  handleSave: function(e) {
+    // send data back to server
+    this.resetData();
+    this.setState({n2o_flux: null,
+                  co2_flux: null,
+                  ch4_flux: null,
+                  recording: false})
+  },
+
+  handleRecord: function(e) {
     e.preventDefault();
     this.resetData();
-    if (this.state.recording) {
-      // send data back to server
-      this.setState({text: 'Record', 
-                    n2o_flux: null,
-                    co2_flux: null,
-                    ch4_flux: null,
-                    recording: false})
-    } else {
-      this.setState({text: 'Save', 
-                    recording: true,
-                    now: new Date()})
-    }
+    this.setState({recording: true,
+                  now: new Date()})
   },
 
   prepareData: function(datum) {

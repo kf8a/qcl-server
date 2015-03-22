@@ -9,11 +9,10 @@ d3Chart.create = function(el, state) {
   var data  =  state.data
   var margin = {top: 20, right: 20, bottom: 20, left: 40}
 
-  console.log(el,height, width, margin)
-
   var svg = d3.select(el).append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
+    .attr("preserveAspectRatio", "xMinYMin meet")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
   this.elements.svg = svg;
