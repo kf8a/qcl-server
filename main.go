@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"log"
@@ -38,6 +39,22 @@ func QclHandler(q *qcl, w http.ResponseWriter, r *http.Request) {
 	c.reader()
 }
 
+type datum struct{}
+
+func SaveDataHanlder(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+
+	var data map[string]interface{}
+	err := decoder.Decode(&data)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	// save data
+
+	http.Redirect(w, r, "/", http.StatusFound)
+}
+
 func main() {
 	var host = "127.0.0.1"
 	instrument := newQcl("tcp://" + host + ":5550")
@@ -46,6 +63,9 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		QclHandler(instrument, w, r)
+	})
+	r.HandleFunc("/save", func(w http.ResponseWriter, r *http.Request) {
+		SaveDataHanlder(w, r)
 	})
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/")))
 	http.Handle("/", r)
