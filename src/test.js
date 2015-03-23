@@ -115,7 +115,7 @@ var App = React.createClass({
   },
 
   computeFluxes: function() {
-    if (this.state.co2.length < 2) {return; };
+    if (this.state.n2o.length < 2) {return; };
     var n2o_flux = this.computeFlux(this.state.n2o);
     var co2_flux = this.computeFlux(this.state.co2);
     var ch4_flux = this.computeFlux(this.state.ch4);
