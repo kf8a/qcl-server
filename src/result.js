@@ -7,9 +7,9 @@ var Result =  React.createClass({
         <div className="row">
         <div className="col-md-6">
           <ul className='flux list-unstyled'>
-          <li>N2O: { numeral(this.props.n2o * 100000).format('+0.0')} </li>
-          <li>CO2: { numeral(this.props.co2 * 100000).format('+0.0')} </li>
-          <li>CH4: { numeral(this.props.ch4 * 100000).format('+0.0')} </li>
+          <li>N2O: { numeral(this.props.n2o).format('+0.00')} </li>
+          <li>CO2: { numeral(this.props.co2).format('+0.00')} </li>
+          <li>CH4: { numeral(this.props.ch4).format('+0.00')} </li>
           </ul>
         </div>
           <div className="col-md-3">
