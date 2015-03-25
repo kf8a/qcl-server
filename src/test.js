@@ -10,7 +10,6 @@ var App = React.createClass({
       ch4: [],
       n2o: [],
       co2: [],
-      text: "Record",
       recording: false,
       n2o_flux: 0,
       co2_flux: 0,
