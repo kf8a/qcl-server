@@ -24,7 +24,20 @@ var Result =  React.createClass({
     } else {
       return(
       <div className='results'>
-        <button type='button' className="btn btn-primary btn-lg btn-block" onClick={this.props.handleRecord}>Record</button>
+        <form className='form'>
+        <div className="form-group">
+        <label for="location">Location</label>
+          <select id="location">
+            <option value='T1R1'>T1R1</option>
+            <option value="T1R2">T1R2</option>
+          </select>
+          </div>
+          <div className="form-group">
+          <label for="height">Height</label>
+          <input id="height" type='number'/> cm
+        </div>
+        </form>
+        <button type='button' className="btn btn-primary btn-lg" onClick={this.props.handleRecord}>Record</button>
         </div>
       )
   }

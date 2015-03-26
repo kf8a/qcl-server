@@ -5,43 +5,6 @@
 
 var App = React.createClass({
   getInitialState: function() {
-    return {
-      recording: false
-    }
-  },
-
-  render: function() {
-    if (this.state.recording) {
-      return(
-        <div className="Flux">
-        <Flux socketService={socketService} />, 
-          </div>
-      )
-    } else {
-      return(
-        <div>
-        <form className='form'>
-        <div className="form-group">
-        <label for="location">Location</label>
-          <select id="location">
-            <option value='T1R1'>T1R1</option>
-            <option value="T1R2">T1R2</option>
-          </select>
-          </div>
-          <div className="form-group">
-          <label for="height">Height</label>
-          <input id="height" type='number'/> cm
-        </div>
-        <button>Record</button>
-        </form>
-        </div>
-      )
-    }
-  }
-});
-
-var Flux = React.createClass({
-  getInitialState: function() {
     return { 
       ch4: [],
       n2o: [],
