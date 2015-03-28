@@ -79,7 +79,15 @@ var App = React.createClass({
   },
 
   handleSave: function(e) {
+    e.preventDefault();
     // send data back to server
+    jQuery.ajax({
+      type: "POST",
+      url: "/save",
+      data: {"co2": this.state.co2, "ch4": this.state.ch4, "n2o": this.state.n2o},
+      dataType: 'json'
+    });
+
     this.resetData();
     this.setState({n2o_flux: null,
                   co2_flux: null,
