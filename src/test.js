@@ -84,7 +84,7 @@ var App = React.createClass({
     jQuery.ajax({
       type: "POST",
       url: "/save",
-      data: {"co2": this.state.co2, "ch4": this.state.ch4, "n2o": this.state.n2o},
+      data: JSON.stringify({"co2": this.state.co2, "ch4": this.state.ch4, "n2o": this.state.n2o}),
       dataType: 'json'
     });
 
