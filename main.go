@@ -2,10 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	"io"
 	"log"
 	"net/http"
+	"os"
 )
 
 type connection struct {
@@ -50,7 +53,15 @@ func SaveDataHanlder(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
+	fmt.Println(data)
 	// save data
+	f, err := os.Open("data.json")
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer f.Close()
+	io.Copy(f, r.Body)
 
 	http.Redirect(w, r, "/", http.StatusFound)
 }
