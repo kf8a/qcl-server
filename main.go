@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
@@ -67,9 +68,13 @@ func SaveDataHanlder(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	var test bool
+	flag.BoolVar(&test, "test", false, "use a random number generator instead of a live feed")
+	flag.Parse()
+
 	var host = "127.0.0.1"
 	instrument := newQcl("tcp://" + host + ":5550")
-	go instrument.read()
+	go instrument.read(test)
 
 	r := mux.NewRouter()
 	r.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {

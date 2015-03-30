@@ -2,7 +2,7 @@ package main
 
 import (
 	zmq "github.com/pebbe/zmq4"
-	"log"
+	qclReader "qcl-reader"
 )
 
 type qcl struct {
@@ -23,36 +23,26 @@ func newQcl(hostName string) *qcl {
 	}
 }
 
-func (q *qcl) read() {
-	for {
-		socket, err := zmq.NewSocket(zmq.SUB)
-		if err != nil {
-			log.Println("ZMQ socket error", err)
-		}
-		defer socket.Close()
+func (q *qcl) read(test bool) {
+	myqcl := qclReader.QCL{}
 
-		socket.SetSubscribe("")
-		socket.Connect(q.host)
-		for {
-			data, err := socket.Recv(0)
-			if err != nil {
-				log.Println("Read error", err)
-				socket.Close()
-				break
-			}
-			select {
-			case c := <-q.register:
-				q.connections[c] = true
-			case c := <-q.unregister:
-				q.connections[c] = false
-			default:
-				for c := range q.connections {
-					select {
-					case c.send <- []byte(data):
-					default:
-						delete(q.connections, c)
-						close(c.send)
-					}
+	cs := make(chan string)
+	go myqcl.Sampler(test, cs)
+
+	for {
+		data := <-cs
+		select {
+		case c := <-q.register:
+			q.connections[c] = true
+		case c := <-q.unregister:
+			q.connections[c] = false
+		default:
+			for c := range q.connections {
+				select {
+				case c.send <- []byte(data):
+				default:
+					delete(q.connections, c)
+					close(c.send)
 				}
 			}
 		}
