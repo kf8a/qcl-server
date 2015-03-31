@@ -1,3 +1,4 @@
 qcl-webserver
 public/.module-cache
 public/*.js
+data.json

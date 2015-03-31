@@ -56,7 +56,7 @@ func SaveDataHanlder(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(data)
 	// save data
-	f, err := os.Open("data.json")
+	f, err := os.OpenFile("data.json", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0600)
 	if err != nil {
 		log.Println(err)
 		return
