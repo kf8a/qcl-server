@@ -4,6 +4,7 @@ d3Chart.elements = {};
 
 d3Chart.create = function(el, state) {
   var boundingBox = d3.select(el).node().getBoundingClientRect();
+  console.log(boundingBox)
   var height = boundingBox.height
   var width =  boundingBox.width
   var data  =  state.data
@@ -111,7 +112,7 @@ d3Chart.update = function(el, state) {
     .attr("cx", function(d) {return x(d.time)})
     .attr("cy", function(d) { return y(d.value)})
 
-  svg.select(".circles").selectAll("cirlce")
+  svg.select(".circles").selectAll("circle")
     .data(data)
     .enter()
     .append("circle")
