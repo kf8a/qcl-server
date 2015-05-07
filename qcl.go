@@ -1,7 +1,6 @@
 package main
 
 import (
-	zmq "github.com/pebbe/zmq4"
 	qclReader "qcl-reader"
 )
 
@@ -9,9 +8,7 @@ type qcl struct {
 	connections map[*connection]bool
 	register    chan *connection
 	unregister  chan *connection
-	socket      zmq.Socket
-	// send        chan []byte
-	host string
+	host        string
 }
 
 func newQcl(hostName string) *qcl {
