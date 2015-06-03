@@ -1,7 +1,7 @@
 package main
 
 import (
-	qclReader "qcl-reader"
+	qclReader "github.com/kf8a/qclreader"
 )
 
 type qcl struct {

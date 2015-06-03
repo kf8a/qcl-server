@@ -10,6 +10,8 @@ var App = React.createClass({
       n2o: [],
       co2: [],
       recording: false,
+      location: "",
+      height: 0,
       n2o_flux: 0,
       co2_flux: 0,
       ch4_flux: 0,
@@ -84,7 +86,7 @@ var App = React.createClass({
     jQuery.ajax({
       type: "POST",
       url: "/save",
-      data: JSON.stringify({"co2": this.state.co2, "ch4": this.state.ch4, "n2o": this.state.n2o}),
+      data: JSON.stringify({"location": this.state.location,"height": this.state.height, "co2": this.state.co2, "ch4": this.state.ch4, "n2o": this.state.n2o}),
       dataType: 'json'
     });
 

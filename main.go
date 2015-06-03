@@ -46,15 +46,6 @@ func QclHandler(q *qcl, w http.ResponseWriter, r *http.Request) {
 type datum struct{}
 
 func SaveDataHanlder(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-
-	var data map[string]interface{}
-	err := decoder.Decode(&data)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	fmt.Println(data)
 	// save data
 	f, err := os.OpenFile("data.json", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0600)
 	if err != nil {
@@ -62,8 +53,21 @@ func SaveDataHanlder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer f.Close()
-	io.Copy(f, r.Body)
+	_, err = io.Copy(f, r.Body)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
+	decoder := json.NewDecoder(r.Body)
+
+	var data map[string]interface{}
+	err = decoder.Decode(&data)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	fmt.Println(data)
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
